@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="パナソニック コスモシリーズワイド21のネーム付きスイッチハンドル用に、実物と同じ太さ・配置でスイッチの名入れカードを自作できる無料ツール。パソコンでもスマートフォンでもブラウザだけで使えます。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%B7%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>スイッチネーム工房</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500&display=swap');
+
+  :root {
+    --bg: #eef1f4;
+    --surface: #ffffff;
+    --surface-2: #f6f8fa;
+    --ink: #14181c;
+    --muted: #5b6672;
+    --line: #d3d9de;
+    --accent: #1b5fae;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3ecf7;
+    --danger: #a53939;
+    --shadow: 0 1px 2px rgba(20, 24, 28, 0.06), 0 8px 24px rgba(20, 24, 28, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161b;
+      --surface: #1b2128;
+      --surface-2: #20272f;
+      --ink: #eceef0;
+      --muted: #9aa6b2;
+      --line: #2b333c;
+      --accent: #6ba1e0;
+      --accent-ink: #0d1216;
+      --accent-soft: #1e2e42;
+      --danger: #d98080;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12161b;
+    --surface: #1b2128;
+    --surface-2: #20272f;
+    --ink: #eceef0;
+    --muted: #9aa6b2;
+    --line: #2b333c;
+    --accent: #6ba1e0;
+    --accent-ink: #0d1216;
+    --accent-soft: #1e2e42;
+    --danger: #d98080;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+    line-height: 1.6;
+    padding: 24px 16px 64px;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  .mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  header.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 16px;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px;
+  }
+
+  .lede {
+    color: var(--muted);
+    max-width: 62ch;
+    margin: 0 0 22px;
+    font-size: 15px;
+  }
+
+  .dimline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    margin: 0 0 28px;
+  }
+  .dimline svg { flex: none; }
+  .dimline .tick-label { white-space: nowrap; }
+
+  section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  section > h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
+
+  /* --- environment segmented control --- */
+  .env-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .env-option {
+    flex: 1 1 220px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    background: var(--surface-2);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .env-option:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .env-option input { accent-color: var(--accent); margin-right: 8px; }
+  .env-option .env-title { font-weight: 700; font-size: 14.5px; }
+  .env-option .env-desc { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+
+  .tip {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .tip b { color: var(--ink); }
+
+  /* --- card editor rows --- */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row:last-of-type { border-bottom: none; }
+
+  .row input[type="text"] {
+    width: 100%;
+    font: inherit;
+    font-size: 15px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .row input[type="text"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .row .movebtns { display: flex; gap: 4px; }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button.icon { padding: 8px 9px; font-size: 12px; line-height: 1; }
+  button.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+  .add-row {
+    margin-top: 12px;
+    margin-right: 8px;
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .bulk-toggle {
+    margin-top: 12px;
+  }
+
+  .bulk-panel {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .bulk-panel textarea {
+    width: 100%;
+    min-height: 110px;
+    font: inherit;
+    font-size: 14px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .bulk-panel .bulk-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .bulk-panel .bulk-add {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: 12.5px;
+    margin: 12px 0 0;
+  }
+  .hint code {
+    font-family: "JetBrains Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  /* --- preview grid --- */
+  .preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .print-btn {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    font-weight: 700;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 9px;
+  }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+  }
+  .preview-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .preview-cell .place {
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: center;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .preview-cell canvas {
+    width: 100%;
+    max-width: 210px;
+    height: auto;
+    aspect-ratio: 24.5 / 9.7;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+
+  .empty-note {
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  footer {
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+  footer p { margin: 4px 0; }
+
+  /* --- print sheet: built only for printing --- */
+  #print-sheet { display: none; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #print-sheet, #print-sheet * { visibility: visible; }
+    body { background: #fff; padding: 0; margin: 0; }
+    #print-sheet {
+      display: block;
+      position: absolute;
+      top: 0; left: 0;
+      width: 210mm;
+      padding: 12mm 15mm;
+    }
+    #print-sheet h3 {
+      font-family: "Zen Kaku Gothic New", sans-serif;
+      font-size: 12pt;
+      margin: 0 0 3mm;
+    }
+    #print-sheet .print-note {
+      font-family: "Zen Kaku Gothic New", sans-serif;
+      font-size: 8.5pt;
+      color: #444;
+      margin: 0 0 2mm;
+    }
+    #print-sheet .grid {
+      margin-top: 8mm;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 24.5mm);
+      column-gap: 4mm;
+      row-gap: 10mm;
+    }
+    #print-sheet .cell { break-inside: avoid; }
+    #print-sheet .cell .label {
+      font-family: "Zen Kaku Gothic New", sans-serif;
+      font-size: 6.5pt;
+      color: #666;
+      margin-bottom: 0.8mm;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 24.5mm;
+    }
+    #print-sheet canvas {
+      display: block;
+      width: 24.5mm;
+      height: 9.7mm;
+      border: 0.2pt solid #999;
+    }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <h1>スイッチネーム工房</h1>
+    <span class="badge">非公式・自作ツール</span>
+  </header>
+  <p class="lede">
+    パナソニック コスモシリーズワイド21のネーム付きスイッチハンドル(WT3011W 等)用に、
+    実物カードと同じ太さ・配置(均等割り付け)で名入れカードを作り、その場で印刷できます。
+    パソコンがなくてもスマートフォンのブラウザだけで完結します。
+  </p>
+  <div class="dimline" aria-hidden="true">
+    <svg width="120" height="14" viewBox="0 0 120 14">
+      <line x1="2" y1="7" x2="118" y2="7" stroke="currentColor" stroke-width="1"/>
+      <line x1="2" y1="2" x2="2" y2="12" stroke="currentColor" stroke-width="1"/>
+      <line x1="118" y1="2" x2="118" y2="12" stroke="currentColor" stroke-width="1"/>
+    </svg>
+    <span class="tick-label">カード寸法 24.5mm × 9.7mm(コスモワイド21 共通)</span>
+  </div>
+
+  <section>
+    <h2>1. 印刷環境</h2>
+    <div class="env-row" role="radiogroup" aria-label="印刷環境">
+      <label class="env-option">
+        <input type="radio" name="env" value="home" checked>
+        <span class="env-title">家庭用プリンタ</span>
+        <div class="env-desc">インクジェット中心。ドットゲイン(にじみ)を見込んで線を微調整します。</div>
+      </label>
+      <label class="env-option">
+        <input type="radio" name="env" value="commercial">
+        <span class="env-title">業務用・オフィスプリンタ</span>
+        <div class="env-desc">レーザー機など高精細な出力を想定し、線の太さは調整しません。</div>
+      </label>
+    </div>
+    <div class="tip" id="env-tip"></div>
+  </section>
+
+  <section>
+    <h2>2. ネーム一覧</h2>
+    <div id="rows"></div>
+    <button class="add-row" id="add-row" type="button">+ カードを追加</button>
+    <button class="bulk-toggle" id="bulk-toggle" type="button">まとめて貼り付けで追加</button>
+    <div class="bulk-panel" id="bulk-panel" hidden>
+      <textarea id="bulk-text" placeholder="1行に1枚分を入力してください&#10;例:&#10;洋室&#10;キッチン①&#10;キッチン②&#10;勾配天井/キッチンダイニング"></textarea>
+      <div class="bulk-actions">
+        <button class="bulk-add" id="bulk-add" type="button">この内容を追加する</button>
+        <button id="bulk-cancel" type="button">閉じる</button>
+      </div>
+    </div>
+    <p class="hint">
+      「+ カードを追加」は何度でも押せます。1軒分(20枚以上)の現場でも「まとめて貼り付けで追加」なら、一覧を1行1枚でまとめて貼り付けるだけで一気に追加できます。
+      1枚に収まらない長い文言は、<code>/</code> を入れると好きな位置で改行できます(例:
+      <code>勾配天井/キッチンダイニング</code>)。数字を含む「(2)」のようなカッコはひとまとまりで配置されます。
+    </p>
+  </section>
+
+  <section>
+    <div class="preview-toolbar">
+      <h2 style="margin:0;">3. プレビュー &amp; 印刷</h2>
+      <button class="print-btn" id="print-btn" type="button">この内容で印刷する</button>
+    </div>
+    <div class="preview-grid" id="preview-grid"></div>
+    <p class="hint" id="print-hint"></p>
+  </section>
+
+  <footer>
+    <p>本ツールはパナソニック公式製品・提携品ではない非公式の自作ツールです。カード寸法・書体は独自に実物カードを参考に近づけたものであり、すべての機種・年式での適合を保証するものではありません。</p>
+    <p>印刷前に1枚だけ試し切りし、実際のスイッチハンドルに合うか確認することをおすすめします。</p>
+  </footer>
+</div>
+
+<div id="print-sheet">
+  <h3>ネームスイッチ カード印刷シート</h3>
+  <p class="print-note">実寸(100%・拡大縮小なし)で印刷し、枠線に沿って切り出してください。</p>
+  <div class="grid" id="print-grid"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var FONT_FAMILY = '"Noto Sans JP"';
+  var REGULAR_WEIGHT = 400;
+  var MEDIUM_WEIGHT = 500;
+  var CARD_W_MM = 24.5, CARD_H_MM = 9.7, MARGIN_MM = 0.6;
+  var PX_PER_MM = 16;
+  var ABS_MAX_FONT = CARD_H_MM * PX_PER_MM * 0.6; // generous ceiling; height/width fitting narrows it down
+  var CELL_FILL_RATIO = 0.88;
+  var SAFETY = 0.92;
+  var TOKEN_RE = /\([^)]*\)|./gu;
+  var STORE_KEY = "switch-name-workshop-v1";
+
+  var state = { env: "home", cards: [] };
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.cards) && parsed.cards.length) {
+        state.cards = parsed.cards;
+      }
+      if (parsed && (parsed.env === "home" || parsed.env === "commercial")) {
+        state.env = parsed.env;
+      }
+    } catch (e) { /* ignore: private mode / storage blocked */ }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch (e) { /* ignore */ }
+  }
+
+  function tokenize(line) {
+    return line.match(TOKEN_RE) || [""];
+  }
+
+  function measureWidth(ctx, token, size, weight) {
+    ctx.font = weight + " " + size + "px " + FONT_FAMILY;
+    return ctx.measureText(token).width;
+  }
+
+  function fontSizeForLine(ctx, tokens, availW, weight) {
+    var cellW = availW / tokens.length;
+    var probe = 100;
+    var size = ABS_MAX_FONT;
+    for (var i = 0; i < tokens.length; i++) {
+      var w = measureWidth(ctx, tokens[i], probe, weight);
+      if (w > 0) size = Math.min(size, probe * (cellW * CELL_FILL_RATIO) / w);
+    }
+    return size;
+  }
+
+  function layoutCard(ctx, lines, availW, availH) {
+    var lineTokens = lines.map(tokenize);
+    // 2-line cards run at a smaller font (less width per line), which reads
+    // too light at Regular weight — bump to Medium for legibility there.
+    var weight = lines.length === 1 ? REGULAR_WEIGHT : MEDIUM_WEIGHT;
+    var heightPerLine = availH / lines.length;
+    var heightBased = heightPerLine * (lines.length === 1 ? 0.78 : 0.72);
+    var widthBased = Infinity;
+    for (var i = 0; i < lineTokens.length; i++) {
+      widthBased = Math.min(widthBased, fontSizeForLine(ctx, lineTokens[i], availW, weight));
+    }
+    var size = Math.min(ABS_MAX_FONT, heightBased, widthBased) * SAFETY;
+    return { lineTokens: lineTokens, size: size, weight: weight };
+  }
+
+  function erode(ctx, w, h) {
+    var img = ctx.getImageData(0, 0, w, h);
+    var src = img.data;
+    var out = new Uint8ClampedArray(src.length);
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var m = 255;
+        for (var dy = -1; dy <= 1 && m > 0; dy++) {
+          for (var dx = -1; dx <= 1; dx++) {
+            var nx = x + dx, ny = y + dy;
+            var a;
+            if (nx < 0 || ny < 0 || nx >= w || ny >= h) { a = 0; }
+            else { a = src[(ny * w + nx) * 4 + 3]; }
+            if (a < m) m = a;
+          }
+        }
+        var idx = (y * w + x) * 4;
+        out[idx] = src[idx]; out[idx + 1] = src[idx + 1]; out[idx + 2] = src[idx + 2]; out[idx + 3] = m;
+      }
+    }
+    ctx.putImageData(new ImageData(out, w, h), 0, 0);
+  }
+
+  function renderCard(canvas, text, homeMode) {
+    canvas.width = Math.round(CARD_W_MM * PX_PER_MM);
+    canvas.height = Math.round(CARD_H_MM * PX_PER_MM);
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    var lines = String(text || "").split("/").filter(function (l) { return l.length > 0; });
+    if (!lines.length) lines = [""];
+
+    var marginPx = MARGIN_MM * PX_PER_MM;
+    var availW = canvas.width - 2 * marginPx;
+    var availH = canvas.height - 2 * marginPx;
+
+    var layout = layoutCard(ctx, lines, availW, availH);
+    ctx.font = layout.weight + " " + layout.size + "px " + FONT_FAMILY;
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    var lineGap = layout.size * 1.25;
+    var totalH = lineGap * layout.lineTokens.length;
+    var firstCenter = canvas.height / 2 - totalH / 2 + lineGap / 2;
+
+    layout.lineTokens.forEach(function (tokens, i) {
+      var cellW = availW / tokens.length;
+      var cy = firstCenter + i * lineGap;
+      tokens.forEach(function (tok, j) {
+        var cx = marginPx + cellW * (j + 0.5);
+        ctx.fillText(tok, cx, cy);
+      });
+    });
+
+    if (homeMode) erode(ctx, canvas.width, canvas.height);
+  }
+
+  // ---------- UI wiring ----------
+
+  var rowsEl = document.getElementById("rows");
+  var previewGridEl = document.getElementById("preview-grid");
+  var printGridEl = document.getElementById("print-grid");
+  var envTipEl = document.getElementById("env-tip");
+  var printHintEl = document.getElementById("print-hint");
+
+  var TIP_TEXT = {
+    home: "推奨設定: 印刷品質「きれい/高精細」・用紙は普通紙のまま・フォト補正はオフ。可能ならモノクロ(黒のみ)印刷にすると輪郭がにじみにくくなります。",
+    commercial: "推奨設定: 用紙種類は普通紙・拡大縮小100%(実寸)。レーザー機は滲みが少ないため、線幅の事前補正は行っていません。"
+  };
+  var PRINT_HINT_TEXT = {
+    home: "印刷ダイアログで「実際のサイズ/100%」を選び、「用紙に合わせて拡大」はオフにしてください。",
+    commercial: "複合機の場合も倍率100%・用紙サイズA4を確認してください。"
+  };
+
+  function currentEnv() {
+    var checked = document.querySelector('input[name="env"]:checked');
+    return checked ? checked.value : "home";
+  }
+
+  function renderRows() {
+    rowsEl.innerHTML = "";
+    state.cards.forEach(function (text, idx) {
+      var row = document.createElement("div");
+      row.className = "row";
+
+      var input = document.createElement("input");
+      input.type = "text";
+      input.value = text;
+      input.placeholder = "例: 勾配天井/キッチンダイニング";
+      input.setAttribute("aria-label", (idx + 1) + "枚目のネーム");
+      input.addEventListener("input", function () {
+        state.cards[idx] = input.value;
+        saveState();
+        renderPreview();
+      });
+
+      var moveWrap = document.createElement("div");
+      moveWrap.className = "movebtns";
+
+      var upBtn = document.createElement("button");
+      upBtn.type = "button"; upBtn.className = "icon"; upBtn.textContent = "▲";
+      upBtn.setAttribute("aria-label", "上へ移動");
+      upBtn.disabled = idx === 0;
+      upBtn.addEventListener("click", function () {
+        if (idx === 0) return;
+        var tmp = state.cards[idx - 1];
+        state.cards[idx - 1] = state.cards[idx];
+        state.cards[idx] = tmp;
+        saveState(); renderRows(); renderPreview();
+      });
+
+      var downBtn = document.createElement("button");
+      downBtn.type = "button"; downBtn.className = "icon"; downBtn.textContent = "▼";
+      downBtn.setAttribute("aria-label", "下へ移動");
+      downBtn.disabled = idx === state.cards.length - 1;
+      downBtn.addEventListener("click", function () {
+        if (idx === state.cards.length - 1) return;
+        var tmp = state.cards[idx + 1];
+        state.cards[idx + 1] = state.cards[idx];
+        state.cards[idx] = tmp;
+        saveState(); renderRows(); renderPreview();
+      });
+
+      moveWrap.appendChild(upBtn);
+      moveWrap.appendChild(downBtn);
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button"; delBtn.className = "danger"; delBtn.textContent = "削除";
+      delBtn.addEventListener("click", function () {
+        state.cards.splice(idx, 1);
+        saveState(); renderRows(); renderPreview();
+      });
+
+      row.appendChild(input);
+      row.appendChild(moveWrap);
+      row.appendChild(delBtn);
+      rowsEl.appendChild(row);
+    });
+
+    if (!state.cards.length) {
+      var note = document.createElement("p");
+      note.className = "empty-note";
+      note.textContent = "カードがありません。「+ カードを追加」から始めてください。";
+      rowsEl.appendChild(note);
+    }
+  }
+
+  function renderPreview() {
+    var env = currentEnv();
+    var homeMode = env === "home";
+
+    envTipEl.textContent = TIP_TEXT[env];
+    printHintEl.textContent = PRINT_HINT_TEXT[env];
+
+    previewGridEl.innerHTML = "";
+    printGridEl.innerHTML = "";
+
+    state.cards.forEach(function (text) {
+      if (!text) return;
+
+      var cell = document.createElement("div");
+      cell.className = "preview-cell";
+      var label = document.createElement("div");
+      label.className = "place";
+      label.textContent = text.replace(/\//g, " / ");
+      var canvas = document.createElement("canvas");
+      renderCard(canvas, text, homeMode);
+      cell.appendChild(canvas);
+      cell.appendChild(label);
+      previewGridEl.appendChild(cell);
+
+      var pcell = document.createElement("div");
+      pcell.className = "cell";
+      var plabel = document.createElement("div");
+      plabel.className = "label";
+      plabel.textContent = text.replace(/\//g, " / ");
+      var pcanvas = document.createElement("canvas");
+      renderCard(pcanvas, text, homeMode);
+      pcell.appendChild(plabel);
+      pcell.appendChild(pcanvas);
+      printGridEl.appendChild(pcell);
+    });
+
+    if (!previewGridEl.children.length) {
+      var note = document.createElement("p");
+      note.className = "empty-note";
+      note.textContent = "プレビューするカードがありません。";
+      previewGridEl.appendChild(note);
+    }
+  }
+
+  document.getElementById("add-row").addEventListener("click", function () {
+    state.cards.push("");
+    saveState(); renderRows(); renderPreview();
+    var inputs = rowsEl.querySelectorAll("input[type=text]");
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+
+  var bulkPanelEl = document.getElementById("bulk-panel");
+  var bulkTextEl = document.getElementById("bulk-text");
+
+  document.getElementById("bulk-toggle").addEventListener("click", function () {
+    bulkPanelEl.hidden = !bulkPanelEl.hidden;
+    if (!bulkPanelEl.hidden) bulkTextEl.focus();
+  });
+
+  document.getElementById("bulk-cancel").addEventListener("click", function () {
+    bulkPanelEl.hidden = true;
+    bulkTextEl.value = "";
+  });
+
+  document.getElementById("bulk-add").addEventListener("click", function () {
+    var lines = bulkTextEl.value.split("\n")
+      .map(function (l) { return l.trim(); })
+      .filter(function (l) { return l.length > 0; });
+    if (!lines.length) return;
+    state.cards = state.cards.concat(lines);
+    bulkTextEl.value = "";
+    bulkPanelEl.hidden = true;
+    saveState(); renderRows(); renderPreview();
+  });
+
+  document.querySelectorAll('input[name="env"]').forEach(function (el) {
+    el.addEventListener("change", function () {
+      state.env = currentEnv();
+      saveState();
+      renderPreview();
+    });
+  });
+
+  document.getElementById("print-btn").addEventListener("click", function () {
+    window.print();
+  });
+
+  function init() {
+    loadState();
+    var radio = document.querySelector('input[name="env"][value="' + state.env + '"]');
+    if (radio) radio.checked = true;
+    renderRows();
+    renderPreview();
+  }
+
+  if (document.fonts && document.fonts.load) {
+    Promise.all([
+      document.fonts.load(REGULAR_WEIGHT + ' 40px "Noto Sans JP"'),
+      document.fonts.load(MEDIUM_WEIGHT + ' 40px "Noto Sans JP"'),
+      document.fonts.ready
+    ]).then(init).catch(init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
