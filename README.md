@@ -8,4 +8,4 @@
 
 ## 公開URL
 
-GitHub Pagesで公開しています(Settings → Pages を有効化後に発行されるURLをここに追記)。
+https://shoui0316.github.io/switch-name-workshop/
